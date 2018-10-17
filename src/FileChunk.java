@@ -1,22 +1,20 @@
-import java.util.Arrays;
-
 public class FileChunk {
 
-    private int chunkNumber;
+    private long chunkNumber;
     private byte[] data;
-    private int totalChunks;
+    private long totalChunks;
 
-    public FileChunk(int chunkNumber, byte[] data, int totalChunks) {
+    public FileChunk(long chunkNumber, byte[] data, long totalChunks) {
         this.chunkNumber = chunkNumber;
         this.data = data;
         this.totalChunks = totalChunks;
     }
 
-    public int getChunkNumber() {
+    public long getChunkNumber() {
         return chunkNumber;
     }
 
-    public void setChunkNumber(int chunkNumber) {
+    public void setChunkNumber(long chunkNumber) {
         this.chunkNumber = chunkNumber;
     }
 
@@ -28,20 +26,11 @@ public class FileChunk {
         this.data = data;
     }
 
-    public int getTotalChunks() {
+    public long getTotalChunks() {
         return totalChunks;
     }
 
-    public void setTotalChunks(int totalChunks) {
+    public void setTotalChunks(long totalChunks) {
         this.totalChunks = totalChunks;
-    }
-
-    @Override
-    public String toString() {
-        return "FileChunk{" +
-                "chunkNumber=" + chunkNumber +
-                ", data=" + Arrays.toString(data) +
-                ", totalChunks=" + totalChunks +
-                '}';
     }
 }

@@ -11,7 +11,7 @@ public class Producer {
     private FileChunksQueue queue;
     private ArrayBlockingQueue queue1;
     private Map<Integer,String> data = new HashMap<>();
-    private static final int BUFFER_SIZE=4096;
+    private static final int BUFFER_SIZE=4096*1024;
     private int POOL_SIZE=10;
     ExecutorService executor = Executors.newFixedThreadPool(POOL_SIZE);
 
@@ -23,10 +23,9 @@ public class Producer {
         try {
             is = new BufferedInputStream(new FileInputStream(file));
             byte[] buffer = null;
-            long cnt = 1;
             long size = file.length();
-            int numberOfChunks=(int)size/BUFFER_SIZE+1;
-            int chunkNumber = 1;
+            long numberOfChunks = getNumberOfChunks(file);
+            long chunkNumber = 1;
             while (chunkNumber<=numberOfChunks) {
                buffer = copy(is);
                FileChunk chunk = createFileChunk(buffer,numberOfChunks,chunkNumber);
@@ -34,7 +33,7 @@ public class Producer {
                executor.submit(()->{
 //                   try {
 //                       int random=new Random().nextInt(10000);
-//                       //Thread.sleep(random);
+//                       Thread.sleep(random);
 //                   } catch (InterruptedException e) {
 //                       e.printStackTrace();
 //                   }
@@ -52,13 +51,40 @@ public class Producer {
 
     }
 
-    private FileChunk createFileChunk(byte[] buffer,int totalChunks,int chunkNumber) {
+    private long getNumberOfChunks(File file) throws IOException {
+        long numberOfChunks=0;
+
+        BufferedInputStream inputStream=null;
+        FileInputStream fis = null;
+        try{
+            fis = new FileInputStream(file);
+            inputStream = new BufferedInputStream(fis);
+            long cnt=1;
+            byte[] buffer = new byte[BUFFER_SIZE];
+            while (cnt> 0){
+                cnt = inputStream.read(buffer);
+                numberOfChunks++;
+            }
+        }finally {
+            if(fis !=null){
+                fis.close();
+                if(inputStream!=null){
+                    inputStream.close();
+                }
+            }
+
+        }
+
+return numberOfChunks;
+    }
+
+    private FileChunk createFileChunk(byte[] buffer,long totalChunks,long chunkNumber) {
         return new FileChunk(chunkNumber,buffer,totalChunks);
     }
 
 
     private String getFilePath() {
-        return "mongoData.txt";
+        return "head-first-java.pdf";
     }
 
     public void setQueue(FileChunksQueue queue){
@@ -70,4 +96,10 @@ public class Producer {
          input.read(buffer);
          return buffer;
     }
+
+    public int copy1(InputStream input,byte[] buffer)throws IOException{
+        return input.read(buffer);
+    }
+
+
 }
